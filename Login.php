@@ -1,6 +1,6 @@
 <?php
 include("conn.php");
-
+session_start();
 $usuario = $_POST['usuario'];
 $contrasena = $_POST['contrasena'];
 
@@ -17,13 +17,18 @@ if($estado=="Activo"){
     $id_rol = $fila["id_rol"];
    switch ($id_rol){
     case 1:
+        $_SESSION ['usuario']= $usuario;
         header("location:admin.php");
-    
+    exit();
     case 2:
+      
+        $_SESSION ['usuario']= $usuario;
         header("Location:Medico.php");
 exit();
 
 case 3:
+    
+        $_SESSION ['usuario']= $usuario;
         header("Location:Usuario.php");
 exit();
  default:
@@ -36,7 +41,9 @@ else{
     ?>
     <script>
         alert("Usted esta dado de baja")
+
     </script>
+    <a
     <?php
     
 
