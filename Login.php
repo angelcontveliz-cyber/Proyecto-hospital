@@ -13,11 +13,14 @@ if ($resultado->num_rows > 0) {
       
     $fila = $resultado->fetch_assoc();
     $estado= $fila["estado"];
+    $id_U=$fila['id_usuario'];
+    $_SESSION ['id_usuario']=$id_U;
 if($estado=="Activo"){
     $id_rol = $fila["id_rol"];
    switch ($id_rol){
     case 1:
         $_SESSION ['usuario']= $usuario;
+
         header("location:admin.php");
     exit();
     case 2:
@@ -38,12 +41,13 @@ exit();
   
 }
 else{
-    ?>
-    <script>
-        alert("Usted esta dado de baja")
+    unset($_SESSION['usuario']);?>
+    <h6>Usted esta dado de baja</h6>
+        <button onclick="window.location.href='index.php'";>Regresar al inicio</button>
+        
 
-    </script>
-    <a
+    
+    
     <?php
     
 

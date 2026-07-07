@@ -6,6 +6,12 @@
     <title>Document</title>
 </head>
 <body>
-     <h6>Hola soy Medico</h6>
+    <?php session_start();?>
+    <h6><center>Bienvenido <?php echo $_SESSION['usuario'];?></center></h6>
+    
+    <button onclick="window.location.href='Update_Insert_select.php? opcion=3'">
+        Insertar Paciente
+    </button>
+    <button onclick="windows.location.href='Update_Insert_select.php? opcion=5'">Crear cita</button>
 </body>
 </html>
