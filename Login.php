@@ -41,20 +41,25 @@ exit();
   
 }
 else{
-    unset($_SESSION['usuario']);?>
-    <h6>Usted esta dado de baja</h6>
-        <button onclick="window.location.href='index.php'";>Regresar al inicio</button>
-        
-
-    
-    
-    <?php
-    
-
+    unset($_SESSION['usuario']);
+    echo "
+    <script>
+        alert('No tiene permiso para ver esta pagina');
+            window.location.href = 'index.php';
+        </script>
+       " ;
+}
 }
 
-} else {
-    
-    echo "Usuario o contraseña incorrectos";
+
+else{
+    unset($_SESSION['usuario']);
+    echo "
+    <script>
+        alert('Usuario o contraseña incorrecto');
+            window.location.href = 'index.php';
+        </script>
+       " ;
 }
+
 ?>
