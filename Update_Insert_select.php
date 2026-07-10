@@ -1,7 +1,10 @@
 <?php 
 include ('conn.php'); 
 session_start(); 
+
+
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -31,11 +34,30 @@ session_start();
                     <option value="Baja">Baja</option>
                 </select>
                 
-                <label for="id_rol">ID de Rol (1=Admin, 2=Médico):</label> 
+                <label for="id_rol">ID de Rol</label> 
+                <select name="id_rol " id="rol" requiered>
+                    <option value=1>Administrador</option>
+                    <option value=2>Medico</option>
+                    <option value=3>Paciente</option>
+        </select>
                 <input type="number" id="id_rol" name="id_rol" required>
                 
                 <button type="submit" name="btn_guardar">Agregar usuario</button>
-                <a href="Admin.php"><button type="button" style="background:#6c757d;">Regresar</button></a>
+                <?php
+                switch($_SESSION['rol']){
+
+                case 1:
+               ?> <a href='Admin'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php
+                exit();
+                case 2:
+                ?> <a href='Medico'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php exit();
+                default:
+               ?> <a href='Pacientes'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+             <?php   exit();
+                break;
+    }?>
             </form>
             <?php 
             if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_guardar'])) {
@@ -82,7 +104,21 @@ session_start();
                 <input type="number" id="id_consultorio" name="id_consultorio" required>
                 
                 <button type="submit" name="Guardar">Agregar Médico</button>
-                <a href="Admin.php"><button type="button" style="background:#6c757d;">Regresar</button></a>
+                <?php
+                switch($_SESSION['rol']){
+
+                case 1:
+               ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php
+                exit();
+                case 2:
+                ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php exit();
+                default:
+               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+             <?php   exit();
+                break;
+    }?>
             </form>
             <?php 
             if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Guardar'])) {
@@ -131,7 +167,21 @@ session_start();
                 </select>
                 
                 <button type="submit" name="btn_guardar">Agregar Paciente</button>
-                <a href="Admin.php"><button type="button" style="background:#6c757d;">Regresar</button></a>
+               <?php
+                switch($_SESSION['rol']){
+
+                case 1:
+               ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php
+                exit();
+                case 2:
+                ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php exit();
+                default:
+               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+             <?php   exit();
+                break;
+    }?>
             </form>
             <?php 
             if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_guardar'])) {
@@ -165,7 +215,21 @@ session_start();
                 <input type="number" id="Existencias" name="Existencias" required>
                 
                 <button type="submit" name="button1">Ingresar medicamento</button>
-                <a href="Admin.php"><button type="button" style="background:#6c757d;">Regresar</button></a>
+                <?php
+                switch($_SESSION['rol']){
+
+                case 1:
+               ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php
+                exit();
+                case 2:
+                ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php exit();
+                default:
+               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+             <?php   exit();
+                break;
+    }?>
             </form>
             <?php 
             if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['button1'])) {
@@ -208,8 +272,23 @@ session_start();
                 <input type="date" id="fecha_r" name="fecha_r" required>
                 
                 <button type="submit" name="butonn1">Insertar cita</button>
-                <a href="Admin.php"><button type="button" style="background:#6c757d;">Regresar</button></a>
+               <?php
+                switch($_SESSION['rol']){
+
+                case 1:
+               ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php
+                exit();
+                case 2:
+                ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php exit();
+                default:
+               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+             <?php   exit();
+                break;
+    }?>
             </form>
+            
             <?php 
             if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['butonn1'])) {
                 $id_paciente = $_POST['id_p'];
@@ -229,18 +308,107 @@ session_start();
             }
             break;
 
-        case 6: // --- PROBLEMÁTICA ---
-            echo "<div style='background:white; padding:40px; border-radius:20px; text-align:center; max-width:500px; margin:auto;'>";
-            echo "<h3>Información del Proyecto</h3>";
-            echo "<p>Problematica, estrategia, por qué se generó la estrategia y conclusiones.</p>";
-            echo "<a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>";
-            echo "</div>";
-            break;
-
-        default:
-            echo "<p style='text-align:center; color:white;'>Opción no válida.</p>";
-            break;
-    }
+        case 6: 
+    
     ?>
+    <form action="" method="post">
+    <label for="id_Cita">Numero de control de cita</label>
+    <input type="text" id="id_Cita" name="id_Cita" required>
+    
+    <label for="fecha">Fecha de creacion</label>
+    <input type="date" id="fecha" name="fecha" required>
+    
+    <button type="submit" name="etesech">Crear receta</button>
+</form>
+
+<?php
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['etesech'])) {
+    
+    $id_Cita = $_POST['id_Cita'];
+    $fecha = $_POST['fecha'];
+    $estador = "Activo";
+    
+    
+    $stmt_select = $conn->prepare("SELECT id_cita FROM citas WHERE id_cita = ?");
+    $stmt_select->bind_param("i", $id_Cita);
+    $stmt_select->execute();
+    $resultado = $stmt_select->get_result();
+
+    
+    if ($resultado->num_rows > 0) {
+        
+        
+        $stmt_insert = $conn->prepare("INSERT INTO recetas (id_cita, fecha, estado) VALUES (?,?,?)");
+        $stmt_insert->bind_param("iss", $id_Cita, $fecha, $estador);
+        
+    
+        if($stmt_insert->execute()){
+            
+           
+            $_SESSION['id_reseta'] = $conn->insert_id; 
+            
+            echo "
+            <script>
+                alert('Receta creada');
+                window.location.href='insertae_detalles.php';
+            </script>
+            ";
+        }
+        
+    } else {
+      
+        $ruta_destino = ($_SESSION['rol'] == 1) ? 'Admin.php' : 'Medico.php';
+        
+        echo "
+        <script>
+            alert('No hay una cita existente');
+            window.location.href='$ruta_destino';
+        </script>
+        ";
+    }
+}
+
+
+    exit();
+
+        
+default:
+
+switch ($_SESSION['rol']) {
+    
+
+    case 1:
+        echo "
+        <script>
+            alert('No tiene permiso para ver esta página');
+            window.location.href='Admin.php';
+        </script>
+        ";
+        exit();
+
+    case 2:
+        echo "
+        <script>
+            alert('No tiene permiso para ver esta página');
+            window.location.href='Medico.php';
+        </script>
+        ";
+        exit();
+
+    default:
+        echo "
+        <script>
+            alert('No tiene permiso para ver esta página');
+            window.location.href='Pacientes.php';
+        </script>
+        ";
+        exit();
+}
+
+break;
+}
+?>
 </body>
 </html>

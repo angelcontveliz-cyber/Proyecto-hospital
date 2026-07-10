@@ -119,7 +119,7 @@ button:hover {
     transform: translateY(-2px);
 }
 
-/* Botón regresar */
+
 button[type="button"] {
     background: #6c757d;
 }
@@ -128,9 +128,7 @@ button[type="button"]:hover {
     background: #555c63;
 }
 
-/* ==========================
-   DASHBOARD
-========================== */
+
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px,1fr));

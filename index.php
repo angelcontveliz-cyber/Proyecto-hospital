@@ -8,7 +8,7 @@
 <body>
     <div class="login-box">
         <h3>Iniciar Sesión</h3>
-        <form action="Login.php" method="POST">
+        <form action="Login" method="post">
             <div class="input-group">
                 <label for="usuario">Usuario</label>
                 <input type="text" id="usuario" name="usuario" required>

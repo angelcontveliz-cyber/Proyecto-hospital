@@ -4,6 +4,7 @@ session_start();
 $usuario = $_POST['usuario'];
 $contrasena = $_POST['contrasena'];
 
+
 $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario' AND contrasena = '$contrasena'";
 $resultado = $conn->query($sql);
 
@@ -15,13 +16,14 @@ if ($resultado->num_rows > 0) {
     $estado= $fila["estado"];
     $id_U=$fila['id_usuario'];
     $_SESSION ['id_usuario']=$id_U;
+   
 if($estado=="Activo"){
-    $id_rol = $fila["id_rol"];
-   switch ($id_rol){
+   $_SESSION['rol'] = $fila["id_rol"];
+   switch ($_SESSION['rol']){
     case 1:
         $_SESSION ['usuario']= $usuario;
 
-        header("location:admin.php");
+        header("location:Admin.php");
     exit();
     case 2:
       
@@ -50,15 +52,11 @@ else{
        " ;
 }
 }
-
-
 else{
-    unset($_SESSION['usuario']);
     echo "
-    <script>
-        alert('Usuario o contraseña incorrecto');
-            window.location.href = 'index.php';
-        </script>
+    $usuario
+$contrasena 
+ 
        " ;
 }
 

@@ -12,14 +12,14 @@ if (!isset($_SESSION['usuario'])) { header("Location: index.php"); exit(); }
 <body>
     <h1 style="color:white;">Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']); ?></h1>
     <div class="dashboard-grid">
-        <a href="Update_Insert_select.php?opcion=1" class="card">👤 <br><br> Usuario</a>
-        <a href="Update_Insert_select.php?opcion=2" class="card">👨‍⚕️ <br><br> Médico</a>
-        <a href="Update_Insert_select.php?opcion=3" class="card">🏥 <br><br> Paciente</a>
-        <a href="Update_Insert_select.php?opcion=4" class="card">💊 <br><br> Medicamento</a>
-        <a href="Update_Insert_select.php?opcion=5" class="card">📅 <br><br> Cita</a>
-        <a href="Update_Insert_select.php?opcion=6" class="card">    <br><br>Reseta </a>
-        <form method="POST" style="padding:0; border:none; box-shadow:none; background:none;">
-            <button oneclick="window.location.href='index.php' <?php unset($_SESSION['usuario']);?>" name="btn_salir" class="card" style="border:none; cursor:pointer;">
+        <a href="Update_Insert_select?opcion=1" class="card">👤 <br><br> Usuario</a>
+        <a href="Update_Insert_select?opcion=2" class="card">👨‍⚕️ <br><br> Médico</a>
+        <a href="Update_Insert_select?opcion=3" class="card">🏥 <br><br> Paciente</a>
+        <a href="Update_Insert_select?opcion=4" class="card">💊 <br><br> Medicamento</a>
+        <a href="Update_Insert_select?opcion=5" class="card">📅 <br><br> Cita</a>
+        <a href="Update_Insert_select?opcion=6" class="card">    <br><br>Reseta </a>
+        <form action="index" style="padding:0; border:none; box-shadow:none; background:none;">
+            <button  name="btn_salir" class="card" style="border:none; cursor:pointer;">
                 <br>🔙<br>Regresar al Login
             </button>
         </form>
