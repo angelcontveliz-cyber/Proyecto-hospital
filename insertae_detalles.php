@@ -48,7 +48,7 @@
             
             
             if($Inse->execute()){
-                echo "¡Por fin! Medicamento registrado.";
+                echo "Medicameto insertado en la recesta";
             } else {
                 echo "Error al guardar: " . $Inse->error;
             }

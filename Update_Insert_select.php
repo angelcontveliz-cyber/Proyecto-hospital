@@ -369,15 +369,80 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['etesech'])) {
         ";
     }
 }
+break;
+ case 7:
+?>
+<form action="" method="POST">
+    <label for="id_reseta">Inserte el numero de receta</label>
+    <input type="number" id="id_reseta" name="id_reseta" required>
+    <button type="submit" name="btn7">Se pago esta receta</button>
+</form>
 
+<?php
 
-    exit();
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn7'])) {
 
-        
+    $id_reseta = $_POST['id_reseta'];
+
+    $comprobar = $conn->prepare("SELECT estado FROM recetas WHERE id_receta = ?");
+    $comprobar->bind_param("i", $id_reseta);
+    $comprobar->execute();
+
+    $comprobare = $comprobar->get_result();
+
+    if ($comprobare->num_rows > 0) {
+
+        $fila = $comprobare->fetch_assoc();
+        $estado = $fila['estado'];
+
+        if ($estado == "Activo") {
+
+            $estadoC = $conn->prepare("UPDATE recetas SET estado='Pagado' WHERE id_receta=?");
+            $estadoC->bind_param("i", $id_reseta);
+            $estadoC->execute();
+
+            $nose = $conn->prepare("SELECT id_medicamento, cantidad FROM detalle_receta WHERE id_receta=?");
+            $nose->bind_param("i", $id_reseta);
+            $nose->execute();
+
+            $cambio = $nose->get_result();
+
+            if ($cambio->num_rows > 0) {
+
+                while ($fila = $cambio->fetch_assoc()) {
+
+                    $cantidad = $fila['cantidad'];
+                    $id_M = $fila['id_medicamento'];
+
+                    $update = $conn->prepare("UPDATE medicamentos SET existencia = existencia - ? WHERE id_medicamento=?");
+                    $update->bind_param("ii", $cantidad, $id_M);
+                    $update->execute();
+
+                    if ($update->affected_rows > 0) {
+                        echo "La receta ha sido actualizada correctamente. Medicamento: $id_M <br>";
+                    } else {
+                        echo "No se pudo actualizar el medicamento $id_M <br>";
+                    }
+
+                }
+
+            }
+
+        } else {
+            echo "<script>alert('La receta ya fue pagada');</script>";
+        }
+
+    } else {
+        echo "<script>alert('Este ID de receta no existe');</script>";
+    }
+
+}
+
+break;
+
 default:
 
 switch ($_SESSION['rol']) {
-    
 
     case 1:
         echo "
@@ -396,18 +461,14 @@ switch ($_SESSION['rol']) {
         </script>
         ";
         exit();
-
     default:
-        echo "
-        <script>
-            alert('No tiene permiso para ver esta página');
-            window.location.href='Pacientes.php';
-        </script>
-        ";
-        exit();
+    echo "lol";
+
+    break;
 }
 
-break;
+
+
 }
 ?>
 </body>

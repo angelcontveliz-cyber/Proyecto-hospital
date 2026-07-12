@@ -18,6 +18,10 @@ if (!isset($_SESSION['usuario'])) { header("Location: index.php"); exit(); }
         <a href="Update_Insert_select?opcion=4" class="card">💊 <br><br> Medicamento</a>
         <a href="Update_Insert_select?opcion=5" class="card">📅 <br><br> Cita</a>
         <a href="Update_Insert_select?opcion=6" class="card">    <br><br>Reseta </a>
+         <a href="Update_Insert_select?opcion=7" class="card">    <br><br>Cambiar estado de receta </a>
+        <a href="subir_foto.php" class="card">    <br><br>Subir foto del paciente </a>
+        <a href="Ver_fotos_pacientes.php" class="card">    <br><br>Ver foto del paciente </a>
+
         <form action="index" style="padding:0; border:none; box-shadow:none; background:none;">
             <button  name="btn_salir" class="card" style="border:none; cursor:pointer;">
                 <br>🔙<br>Regresar al Login
