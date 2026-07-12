@@ -1,6 +1,26 @@
 <?php 
-session_start(); 
-if (!isset($_SESSION['usuario'])) { header("Location: index.php"); exit(); }
+session_start();
+if (isset($_POST['btn_salir'])) {
+    unset($_SESSION['usuario']); 
+    
+    header("Location: index.php"); 
+    exit();
+}
+
+
+if (!isset($_SESSION['usuario'])) { 
+    header("Location: index.php"); 
+    exit(); 
+}
+if($_SESSION['rol']!=2){
+       echo "
+    <script>
+        alert('Apoco si muy hacker wow eres muy bueno');
+            window.location.href = 'index.php';
+        </script>
+       " ;
+    exit(); 
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

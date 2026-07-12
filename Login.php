@@ -53,10 +53,11 @@ else{
 }
 }
 else{
-    echo "
-    $usuario
-$contrasena 
- 
+  echo "
+    <script>
+        alert('Usuario o contraseña incorrecto');
+            window.location.href = 'index.php';
+        </script>
        " ;
 }
 
