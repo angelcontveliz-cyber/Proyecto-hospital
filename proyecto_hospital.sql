@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-07-2026 a las 06:59:27
+-- Tiempo de generación: 13-07-2026 a las 09:17:56
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -21,6 +21,48 @@ SET time_zone = "+00:00";
 -- Base de datos: `proyecto_hospital`
 --
 
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerCitasDelMedico` (IN `p_id_medico` INT)   BEGIN
+
+    SELECT 
+        c.id_cita,
+        c.id_paciente,
+        p.nombre,
+        p.telefono,
+        p.direccion,
+        p.fecha_nacimiento,
+        c.fecha,
+        c.hora,
+        c.estado,
+        c.fecha_registro
+    FROM citas c
+    INNER JOIN pacientes p
+        ON c.id_paciente = p.id_paciente
+    WHERE c.id_medico = p_id_medico;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerPacientesDelMedico` (IN `p_id_medico` INT)   BEGIN
+
+    SELECT DISTINCT
+        p.id_paciente,
+        p.nombre,
+        p.telefono,
+        p.direccion,
+        p.fecha_nacimiento,
+        p.estado
+    FROM citas c
+    INNER JOIN pacientes p
+        ON c.id_paciente = p.id_paciente
+    WHERE c.id_medico = p_id_medico;
+
+END$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -33,8 +75,27 @@ CREATE TABLE `citas` (
   `id_medico` int(11) DEFAULT NULL,
   `fecha` date DEFAULT NULL,
   `hora` time DEFAULT NULL,
-  `estado` varchar(20) DEFAULT NULL
+  `estado` varchar(20) DEFAULT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `citas`
+--
+
+INSERT INTO `citas` (`id_cita`, `id_paciente`, `id_medico`, `fecha`, `hora`, `estado`, `fecha_registro`) VALUES
+(6, 23, 1, '2026-07-31', '02:13:00', 'Activo', '2026-07-05 00:00:00'),
+(7, 4, 3, '2026-07-06', '10:11:00', 'Activo', '2026-07-06 00:00:00'),
+(8, 10, 1, '2026-07-17', '23:55:00', 'Activo', '2026-07-12 00:00:00'),
+(9, 16, 1, '2026-07-13', '00:13:00', 'Activo', '2026-07-13 00:00:00'),
+(10, 17, 1, '2026-07-13', '00:13:00', 'Activo', '2026-07-13 00:00:00'),
+(11, 13, 1, '2026-07-13', '00:18:00', 'Activo', '2026-07-13 00:00:00'),
+(12, 13, 1, '2026-07-13', '00:18:00', 'Activo', '2026-07-13 00:00:00'),
+(13, 13, 1, '2026-07-13', '00:18:00', 'Activo', '2026-07-13 00:00:00'),
+(14, 13, 1, '2026-07-13', '00:18:00', 'Activo', '2026-07-13 00:00:00'),
+(15, 15, 1, '2026-07-13', '00:20:00', 'Activo', '2026-07-13 00:00:00'),
+(18, 4, 1, '2026-07-13', '00:24:00', 'Activo', '2026-07-13 00:00:00'),
+(19, 20, 1, '2026-07-13', '00:26:00', 'Activo', '2026-07-13 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -89,6 +150,13 @@ CREATE TABLE `detalle_receta` (
   `cantidad` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `detalle_receta`
+--
+
+INSERT INTO `detalle_receta` (`id_detalle`, `id_receta`, `id_medicamento`, `cantidad`) VALUES
+(1, 1, 2, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -131,40 +199,24 @@ INSERT INTO `especialidades` (`id_especialidad`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `inventario`
+-- Estructura de tabla para la tabla `imagenes`
 --
 
-CREATE TABLE `inventario` (
-  `id_inventario` int(11) NOT NULL,
-  `id_medicamento` int(11) DEFAULT NULL,
-  `existencia` int(11) DEFAULT 0
+CREATE TABLE `imagenes` (
+  `id_m` int(3) NOT NULL,
+  `id_paciente` int(3) NOT NULL,
+  `imagen` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `inventario`
+-- Volcado de datos para la tabla `imagenes`
 --
 
-INSERT INTO `inventario` (`id_inventario`, `id_medicamento`, `existencia`) VALUES
-(1, 2, 120),
-(2, 3, 85),
-(3, 4, 60),
-(4, 5, 40),
-(5, 6, 150),
-(6, 7, 95),
-(7, 8, 110),
-(8, 9, 75),
-(9, 10, 130),
-(10, 11, 50),
-(11, 12, 65),
-(12, 13, 90),
-(13, 14, 30),
-(14, 15, 55),
-(15, 16, 80),
-(16, 17, 45),
-(17, 18, 70),
-(18, 19, 100),
-(19, 20, 35),
-(20, 21, 125);
+INSERT INTO `imagenes` (`id_m`, `id_paciente`, `imagen`) VALUES
+(1, 1, '\"C:\\xampp\\htdocs\\Proyecto_Hospital\\imagenes_p\\Gemini_Generated_Image_1u949z1u949z1u94.png\"'),
+(2, 1, '\"C:\\xampp\\htdocs\\Proyecto_Hospital\\imagenes_p\\Gemini_Generated_Image_8wnjiz8wnjiz8wnj.png\"'),
+(3, 2, 'imagenes_p/femur.jpg'),
+(4, 20, 'imagenes_p/Fractura de craneo.jpg');
 
 -- --------------------------------------------------------
 
@@ -175,35 +227,42 @@ INSERT INTO `inventario` (`id_inventario`, `id_medicamento`, `existencia`) VALUE
 CREATE TABLE `medicamentos` (
   `id_medicamento` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `descripcion` varchar(255) DEFAULT NULL
+  `descripcion` varchar(255) DEFAULT NULL,
+  `existencia` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `medicamentos`
 --
 
-INSERT INTO `medicamentos` (`id_medicamento`, `nombre`, `descripcion`) VALUES
-(1, 'Paracetamol', 'Para la gastritis'),
-(2, 'Paracetamol', 'Analgésico y antipirético para aliviar dolor y fiebre.'),
-(3, 'Ibuprofeno', 'Antiinflamatorio no esteroideo para dolor e inflamación.'),
-(4, 'Amoxicilina', 'Antibiótico de amplio espectro.'),
-(5, 'Omeprazol', 'Reduce la producción de ácido en el estómago.'),
-(6, 'Loratadina', 'Antihistamínico para el tratamiento de alergias.'),
-(7, 'Metformina', 'Medicamento utilizado para controlar la diabetes tipo 2.'),
-(8, 'Losartán', 'Tratamiento para la hipertensión arterial.'),
-(9, 'Enalapril', 'Inhibidor de la ECA para presión arterial alta.'),
-(10, 'Aspirina', 'Analgésico, antipirético y antiinflamatorio.'),
-(11, 'Diclofenaco', 'Antiinflamatorio para dolor muscular y articular.'),
-(12, 'Salbutamol', 'Broncodilatador para tratar el asma.'),
-(13, 'Azitromicina', 'Antibiótico utilizado para diversas infecciones bacterianas.'),
-(14, 'Clonazepam', 'Medicamento para trastornos de ansiedad y convulsiones.'),
-(15, 'Insulina', 'Hormona utilizada para controlar la glucosa en sangre.'),
-(16, 'Captopril', 'Medicamento para la hipertensión y la insuficiencia cardíaca.'),
-(17, 'Prednisona', 'Corticosteroide para reducir inflamación y reacciones alérgicas.'),
-(18, 'Aciclovir', 'Antiviral utilizado para tratar infecciones por herpes.'),
-(19, 'Naproxeno', 'Antiinflamatorio para aliviar dolor e inflamación.'),
-(20, 'Vitamina C', 'Suplemento vitamínico que fortalece el sistema inmunológico.'),
-(21, 'Carbonato de calcio', 'Suplemento de calcio y antiácido.');
+INSERT INTO `medicamentos` (`id_medicamento`, `nombre`, `descripcion`, `existencia`) VALUES
+(2, 'Paracetamol', 'Analgésico y antipirético para aliviar dolor y fiebre.', 84),
+(3, 'Ibuprofeno', 'Antiinflamatorio no esteroideo para dolor e inflamación.', 60),
+(4, 'Amoxicilina', 'Antibiótico de amplio espectro.', 45),
+(5, 'Omeprazol', 'Reduce la producción de ácido en el estómago.', 70),
+(6, 'Loratadina', 'Antihistamínico para el tratamiento de alergias.', 90),
+(7, 'Metformina', 'Medicamento utilizado para controlar la diabetes tipo 2.', 55),
+(8, 'Losartán', 'Tratamiento para la hipertensión arterial.', 80),
+(9, 'Enalapril', 'Inhibidor de la ECA para presión arterial alta.', 65),
+(10, 'Aspirina', 'Analgésico, antipirético y antiinflamatorio.', 100),
+(11, 'Diclofenaco', 'Antiinflamatorio para dolor muscular y articular.', 50),
+(12, 'Salbutamol', 'Broncodilatador para tratar el asma.', 40),
+(13, 'Azitromicina', 'Antibiótico utilizado para diversas infecciones bacterianas.', 35),
+(14, 'Clonazepam', 'Medicamento para trastornos de ansiedad y convulsiones.', 25),
+(15, 'Insulina', 'Hormona utilizada para controlar la glucosa en sangre.', 30),
+(16, 'Captopril', 'Medicamento para la hipertensión y la insuficiencia cardíaca.', 45),
+(17, 'Prednisona', 'Corticosteroide para reducir inflamación y reacciones alérgicas.', 60),
+(18, 'Aciclovir', 'Antiviral utilizado para tratar infecciones por herpes.', 20),
+(19, 'Naproxeno', 'Antiinflamatorio para aliviar dolor e inflamación.', 75),
+(20, 'Vitamina C', 'Suplemento vitamínico que fortalece el sistema inmunológico.', 150),
+(21, 'Carbonato de calcio', 'Suplemento de calcio y antiácido.', 110),
+(22, 'Experimental', 'Este no es un medicamento verdadero', 5),
+(23, 'Pepepep', 'wodnwefñndenferjfenrl', 15),
+(24, 'wdwe', 'sdsds', 10),
+(25, 'wdssdsa', '12312321', 8),
+(26, 'Lolol', 'Hola que hace', 0),
+(27, 'Nosoe', 'Nose', 0),
+(28, 'Paralelo', 'NO se ya estoy arto de que no salga', 0);
 
 -- --------------------------------------------------------
 
@@ -218,6 +277,19 @@ CREATE TABLE `medicos` (
   `id_especialidad` int(11) DEFAULT NULL,
   `id_consultorio` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `medicos`
+--
+
+INSERT INTO `medicos` (`id_medico`, `id_usuario`, `nombre`, `id_especialidad`, `id_consultorio`) VALUES
+(1, 2, 'Medico_prueba', 3, 2),
+(2, 35, 'Angel', 2, 3),
+(3, 36, 'Leon', 6, 9),
+(4, 37, 'Angelooo', 5, 8),
+(5, 42, 'Prueba1', 5, 4),
+(6, 44, 'asdw', 3, 5),
+(7, 45, 'wefldln', 4, 3);
 
 -- --------------------------------------------------------
 
@@ -259,7 +331,10 @@ INSERT INTO `pacientes` (`id_paciente`, `nombre`, `telefono`, `direccion`, `fech
 (18, 'Alejandro Fuentes Núñez', '4491111127', 'La Salud', '2003-01-29', 'Activo'),
 (19, 'Andrea Vargas Molina', '4491111128', 'Colonia Industrial', '1990-11-20', 'Activo'),
 (20, 'Diego Cabrera León', '4491111129', 'Lomas del Ajedrez', '1998-04-04', 'Activo'),
-(21, 'Natalia Espinoza Rocha', '4491111130', 'El Dorado', '2001-06-13', 'Activo');
+(21, 'Natalia Espinoza Rocha', '4491111130', 'El Dorado', '2001-06-13', 'Activo'),
+(22, 'Angel', '449389121', 'Nome acuerdo', '1950-06-02', 'Baja'),
+(23, 'Prueba', '4493490838', 'Pozo de ambar 108', '2025-07-26', 'Activo'),
+(24, 'jhgfkhf', '121i2121i21', 'Anjdlwdj', '2026-07-06', 'Activo');
 
 -- --------------------------------------------------------
 
@@ -273,6 +348,13 @@ CREATE TABLE `recetas` (
   `fecha` date DEFAULT NULL,
   `estado` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `recetas`
+--
+
+INSERT INTO `recetas` (`id_receta`, `id_cita`, `fecha`, `estado`) VALUES
+(1, 6, '2026-07-09', 'Pagado');
 
 -- --------------------------------------------------------
 
@@ -335,7 +417,28 @@ INSERT INTO `usuarios` (`id_usuario`, `usuario`, `contrasena`, `id_rol`, `estado
 (20, 'Alejandro Fuentes', 'Alex1234', 2, 'Activo'),
 (21, 'Andrea Vargas', 'Andy1234', 3, 'Baja'),
 (22, 'Diego Cabrera', 'Diego1234', 2, 'Activo'),
-(23, 'Natalia Espinoza', 'Naty1234', 3, 'Activo');
+(23, 'Natalia Espinoza', 'Naty1234', 3, 'Activo'),
+(24, 'Angel', 'contraseña', 2, 'Activo'),
+(25, 'Angel', 'Yonose', 2, 'Activo'),
+(26, 'Angel', 'Silverio', 2, 'Activo'),
+(27, 'Anegl', 'Angel', 2, 'Activo'),
+(28, 'Angelo', 'Cont567', 2, ''),
+(29, 'Angel', 'Nose', 2, 'Activo'),
+(30, 'Angel', 'Noses', 2, 'Activo'),
+(31, 'Angel', '123556', 2, 'Activo'),
+(32, 'Angel', 'Silveri', 2, 'Activo'),
+(33, 'Angel', 'Nose', 1, 'Activo'),
+(34, 'Angek', 'nosw', 2, 'Activo'),
+(35, 'Angeñ', 'Nose', 2, 'Activo'),
+(36, 'Daniel Leon', 'dadada1212', 2, 'Activo'),
+(37, 'pereira', 'Nose', 2, 'Activo'),
+(38, 'djcjdk', 'sdkjcns', 1, 'Activo'),
+(39, 'q', 'as', 1, 'Activo'),
+(41, 'Angelo', 'angelo', 1, 'Activo'),
+(42, 'Prueba1', 'Prueba1', 2, 'Activo'),
+(43, 'wpdkwpaqdwej', 'djie', 1, 'Activo'),
+(44, 'Angelsaidjs', 'asjnchsdk', 2, 'Activo'),
+(45, 'Angel', 'Contreras4', 2, 'Activo');
 
 --
 -- Índices para tablas volcadas
@@ -370,11 +473,11 @@ ALTER TABLE `especialidades`
   ADD PRIMARY KEY (`id_especialidad`);
 
 --
--- Indices de la tabla `inventario`
+-- Indices de la tabla `imagenes`
 --
-ALTER TABLE `inventario`
-  ADD PRIMARY KEY (`id_inventario`),
-  ADD KEY `fk_inventario_medicamento` (`id_medicamento`);
+ALTER TABLE `imagenes`
+  ADD PRIMARY KEY (`id_m`),
+  ADD KEY `fk_imagenes_pacientes` (`id_paciente`);
 
 --
 -- Indices de la tabla `medicamentos`
@@ -425,7 +528,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `consultorios`
@@ -437,7 +540,7 @@ ALTER TABLE `consultorios`
 -- AUTO_INCREMENT de la tabla `detalle_receta`
 --
 ALTER TABLE `detalle_receta`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`
@@ -446,34 +549,34 @@ ALTER TABLE `especialidades`
   MODIFY `id_especialidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT de la tabla `inventario`
+-- AUTO_INCREMENT de la tabla `imagenes`
 --
-ALTER TABLE `inventario`
-  MODIFY `id_inventario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+ALTER TABLE `imagenes`
+  MODIFY `id_m` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `medicamentos`
 --
 ALTER TABLE `medicamentos`
-  MODIFY `id_medicamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_medicamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `medicos`
 --
 ALTER TABLE `medicos`
-  MODIFY `id_medico` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_medico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `pacientes`
 --
 ALTER TABLE `pacientes`
-  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `recetas`
 --
 ALTER TABLE `recetas`
-  MODIFY `id_receta` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_receta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -485,7 +588,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- Restricciones para tablas volcadas
@@ -506,10 +609,10 @@ ALTER TABLE `detalle_receta`
   ADD CONSTRAINT `fk_detalle_receta` FOREIGN KEY (`id_receta`) REFERENCES `recetas` (`id_receta`) ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `inventario`
+-- Filtros para la tabla `imagenes`
 --
-ALTER TABLE `inventario`
-  ADD CONSTRAINT `fk_inventario_medicamento` FOREIGN KEY (`id_medicamento`) REFERENCES `medicamentos` (`id_medicamento`) ON UPDATE CASCADE;
+ALTER TABLE `imagenes`
+  ADD CONSTRAINT `fk_imagenes_pacientes` FOREIGN KEY (`id_paciente`) REFERENCES `pacientes` (`id_paciente`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `medicos`
