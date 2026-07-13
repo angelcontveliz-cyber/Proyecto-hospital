@@ -55,7 +55,7 @@ if($resultado->num_rows > 0){
 <form  >
     <?php
     
-            echo "<a href='Medico.php'><button type='button'>Regresar</button></a>";
+            echo "<a href='Admin.php'><button type='button'>Regresar</button></a>";
     ?>
     </form>
 </table>
