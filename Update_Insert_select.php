@@ -347,6 +347,23 @@ echo "<script>
     <input type="date" id="fecha" name="fecha" required>
     
     <button type="submit" name="etesech">Crear receta</button>
+    
+    <?php
+    switch($_SESSION['rol']){
+
+        case 1:
+            echo "<a href='Admin.php'><button type='button'>Regresar</button></a>";
+            break;
+
+        case 2:
+            echo "<a href='Medico.php'><button type='button'>Regresar</button></a>";
+            break;
+
+        default:
+            echo "<a href='Pacientes.php'><button type='button'>Regresar</button></a>";
+            break;
+    }
+    ?>
 </form>
 
 <?php
@@ -404,6 +421,23 @@ break;
     <label for="id_reseta">Inserte el numero de receta</label>
     <input type="number" id="id_reseta" name="id_reseta" required>
     <button type="submit" name="btn7">Se pago esta receta</button>
+    
+    <?php
+    switch($_SESSION['rol']){
+
+        case 1:
+            echo "<a href='Admin.php'><button type='button'>Regresar</button></a>";
+            break;
+
+        case 2:
+            echo "<a href='Medico.php'><button type='button'>Regresar</button></a>";
+            break;
+
+        default:
+            echo "<a href='Pacientes.php'><button type='button'>Regresar</button></a>";
+            break;
+    }
+    ?>
 </form>
 
 <?php

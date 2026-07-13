@@ -1,12 +1,13 @@
 <?php 
 session_start();
-if (isset($_POST['btn_salir'])) {
-    unset($_SESSION['usuario']); 
-    
-    header("Location: index.php"); 
-    exit();
-}
+if(isset($_POST['btn_salir'])){
+$_SESSION = [];
+session_unset();
+session_destroy();
 
+header("Location: index.php");
+exit();
+    exit();}
 
 if (!isset($_SESSION['usuario'])) { 
     header("Location: index.php"); 
@@ -30,15 +31,16 @@ if($_SESSION['rol']!=2){
     <title>Administración</title>
 </head>
 <body>
-    <h1 style="color:white;">Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']); ?></h1>
+    <center><h1 style="color:white;">Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']); ?></h1></center>
+    <br><br>
     <div class="dashboard-grid">
         <a href="Update_Insert_select?opcion=3" class="card">🏥 <br><br> InsertarPaciente</a>
         <a href="Update_Insert_select?opcion=5" class="card">📅 <br><br> Crear cita</a>
         <a href="Update_Insert_select?opcion=6" class="card">    <br><br>Crear Reseta </a>
-        <a href="Update_Insert_select?opcion=7" calss="card">  <br><br>Agregar el pago de receta</a>
-        <a href="Ver_pacientes" calss="card">  <br><br>Ver pacientes</a>
-         <a href="VerCitas" calss="card">  <br><br>Ver citas</a>
-        <form action="index" style="padding:0; border:none; box-shadow:none; background:none;">
+        <a href="Update_Insert_select?opcion=7" class="card">  <br><br>Agregar el pago de receta</a>
+        <a href="Ver_pacientes" class="card">  <br><br>Ver pacientes</a>
+         <a href="VerCitas" class="card">  <br><br>Ver citas</a>
+        <form action="" method="POST" style="padding:0; border:none; box-shadow:none; background:none;">
             <button  name="btn_salir" class="card" style="border:none; cursor:pointer;">
                 <br>🔙<br>Regresar al Login
             </button>

@@ -49,7 +49,12 @@ if($resultado->num_rows > 0){
 <?php
     }
 ?>
-
+<form  >
+    <?php
+    
+            echo "<a href='Medico.php'><button type='button'>Regresar</button></a>";
+    ?>
+    </form>
 </table>
 <div>
 

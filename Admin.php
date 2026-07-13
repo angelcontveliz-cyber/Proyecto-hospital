@@ -1,14 +1,13 @@
 <?php 
 session_start(); 
 
+if(isset($_POST['btn_salir'])){
 
-if (isset($_POST['btn_salir'])) {
-    unset($_SESSION['usuario']); 
-    
-    header("Location: index.php"); 
+    session_destroy();
+
+    header("Location: index.php");
     exit();
 }
-
 
 if (!isset($_SESSION['usuario'])) { 
     header("Location: index.php"); 
@@ -45,12 +44,13 @@ if($_SESSION['rol']!=1){
         <a href="subir_foto.php" class="card">    <br><br>Subir foto del paciente </a>
         <a href="Ver_fotos_pacientes.php" class="card">    <br><br>Ver foto del paciente </a>
 
-        
-        <form action="" method="POST" style="padding:0; border:none; box-shadow:none; background:none;">
-            <button type="submit" name="btn_salir" class="card" style="border:none; cursor:pointer;">
+      <form action="" method="POST" style="padding:0; border:none; box-shadow:none; background:none;">
+            <button  name="btn_salir" class="card" style="border:none; cursor:pointer;">
                 <br>🔙<br>Regresar al Login
             </button>
-        </form>
+</form>
+
+
     </div>
 </body>
 </html>
