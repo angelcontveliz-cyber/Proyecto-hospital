@@ -43,6 +43,7 @@ if($_SESSION['rol']!=1){
          <a href="Update_Insert_select" class="card">    <br><br>Cambiar estado de cita </a>
         <a href="subir_foto.php" class="card">    <br><br>Subir foto del paciente </a>
         <a href="Ver_fotos_pacientes.php" class="card">    <br><br>Ver foto del paciente </a>
+        <a href="Ver_medicos.php" class="card">    <br><br>Ver medicos</a>
 
       <form action="" method="POST" style="padding:0; border:none; box-shadow:none; background:none;">
             <button  name="btn_salir" class="card" style="border:none; cursor:pointer;">
