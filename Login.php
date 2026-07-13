@@ -26,15 +26,27 @@ if($estado=="Activo"){
         header("location:Admin.php");
     exit();
     case 2:
-      
         $_SESSION ['usuario']= $usuario;
-        header("Location:Medico.php");
+       
+        $sql=$conn->prepare("SELECT id_medico FROM medicos where id_usuario=?");
+        $sql->bind_param("i", $id_U);
+        $sql->execute();
+        $resultado = $sql->get_result();
+        if($resultado->num_rows > 0){
+             $lol = $resultado->fetch_assoc();
+             $_SESSION['id_medico']=$lol['id_medico'];
+header("Location:Medico.php");
+
+        }
+      
+        
+        
 exit();
 
 case 3:
     
         $_SESSION ['usuario']= $usuario;
-        header("Location:Usuario.php");
+        header("Location:Pacientes.php");
 exit();
  default:
    heder ("Es imposible que veas esto significa que en algo la cague");

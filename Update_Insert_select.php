@@ -252,60 +252,88 @@ session_start();
             }
             break;
 
-        case 5: // --- CITA ---
+        case 5: 
             ?>
-            <form action="" method="POST">
-                <h3>📅 Crear Cita</h3>
-                <label for="id_p">Número de identificación paciente:</label> 
-                <input type="number" id="id_p" name="id_p" required>
-                
-                <label for="id_m">Número de control de médico:</label> 
-                <input type="number" id="id_m" name="id_m" required>
-                
-                <label for="fecha">Inserte la fecha citado:</label> 
-                <input type="date" id="fecha" name="fecha" required>
-                
-                <label for="hora">Hora de citación:</label> 
-                <input type="time" id="hora" name="hora" required>
-                
-                <label for="fecha_r">Fecha Registro:</label> 
-                <input type="date" id="fecha_r" name="fecha_r" required>
-                
-                <button type="submit" name="butonn1">Insertar cita</button>
-               <?php
-                switch($_SESSION['rol']){
+   <form action="" method="POST">
+    <h3>📅 Crear Cita</h3>
 
-                case 1:
-               ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php
-                exit();
-                case 2:
-                ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php exit();
-                default:
-               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-             <?php   exit();
-                break;
-    }?>
-            </form>
-            
-            <?php 
-            if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['butonn1'])) {
-                $id_paciente = $_POST['id_p'];
-                $id_medico = $_POST['id_m'];
-                $fecha_cita = $_POST['fecha'];
-                $hora_cita = $_POST['hora'];
-                $fecha_reg = $_POST['fecha_r'];
-                $estado = "Activo";
+    <label>Número de identificación del paciente:</label>
+    <input type="number" name="id_p" required>
 
-                $stmt = $conn->prepare("INSERT INTO citas(id_paciente, id_medico, fecha, hora, estado, fecha_registro) VALUES (?,?,?,?,?,?)");
-                $stmt->bind_param("iissss", $id_paciente, $id_medico, $fecha_cita, $hora_cita, $estado, $fecha_reg);
-                
-                if($stmt->execute()){ 
-                    echo "<p style='text-align:center; color:green;'>Cita creada.</p>"; 
-                }
-                $stmt->close();
-            }
+    <label>Número de control del médico:</label>
+    <input type="number" name="id_m" required>
+
+    <label>Fecha de la cita:</label>
+    <input type="date" name="fecha" required>
+
+    <label>Hora de la cita:</label>
+    <input type="time" name="hora" required>
+
+    <label>Fecha de registro:</label>
+    <input type="date" name="fecha_r" required>
+
+    <button type="submit" name="butonn1">Insertar cita</button>
+
+    <?php
+    switch($_SESSION['rol']){
+
+        case 1:
+            echo "<a href='Admin.php'><button type='button'>Regresar</button></a>";
+            break;
+
+        case 2:
+            echo "<a href='Medico.php'><button type='button'>Regresar</button></a>";
+            break;
+
+        default:
+            echo "<a href='Pacientes.php'><button type='button'>Regresar</button></a>";
+            break;
+    }
+    ?>
+</form>
+
+<?php
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['butonn1'])) {
+
+    $id_paciente = $_POST['id_p'];
+    $id_medico = $_POST['id_m'];
+    $fecha = $_POST['fecha'];
+    $hora = $_POST['hora'];
+    $fecha_registro = $_POST['fecha_r'];
+    $estado = "Activo";
+
+    $stmt = $conn->prepare("INSERT INTO citas(id_paciente,id_medico,fecha,hora,estado,fecha_registro)
+                            VALUES(?,?,?,?,?,?)");
+
+    $stmt->bind_param(
+        "iissss",
+        $id_paciente,
+        $id_medico,
+        $fecha,
+        $hora,
+        $estado,
+        $fecha_registro
+    );
+
+    if($stmt->execute()){
+$id_ci = $conn->insert_id;
+$_SESSION['id_cita']=$id_ci;
+echo "<script>
+        alert('Cita creada correctamente. ID de la cita: $id_ci');
+        window.location.href='Update_Insert_select.php?opcion=5';
+      </script>";
+
+    }else{
+
+        echo "<script>
+                alert('Error: ".$stmt->error."');
+              </script>";
+
+    }
+
+    $stmt->close();
+}
             break;
 
         case 6: 
