@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="estilos.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba</title>
@@ -19,8 +20,11 @@ if($resultado->num_rows > 0){
    
 
     ?>
+    <div class="table-container">
 
-<table border="1">
+<h3>📅 Mis citas</h3>
+
+<table >
     <tr>
         <th>Nombre</th>
         <th>Telefono</th>
@@ -47,10 +51,11 @@ if($resultado->num_rows > 0){
 ?>
 
 </table>
+<div>
 
 <?php
 }else{
-    echo $_SESSION['id_medico'];
+        echo "<div class='no-data'>No tiene citas registradas</div>";
 }
 
 ?>

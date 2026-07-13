@@ -36,7 +36,8 @@ if($_SESSION['rol']!=2){
         <a href="Update_Insert_select?opcion=5" class="card">📅 <br><br> Crear cita</a>
         <a href="Update_Insert_select?opcion=6" class="card">    <br><br>Crear Reseta </a>
         <a href="Update_Insert_select?opcion=7" calss="card">  <br><br>Agregar el pago de receta</a>
-           <a href="Ver_pacientes" calss="card">  <br><br>Ver pacientes</a>
+        <a href="Ver_pacientes" calss="card">  <br><br>Ver pacientes</a>
+         <a href="VerCitas" calss="card">  <br><br>Ver citas</a>
         <form action="index" style="padding:0; border:none; box-shadow:none; background:none;">
             <button  name="btn_salir" class="card" style="border:none; cursor:pointer;">
                 <br>🔙<br>Regresar al Login

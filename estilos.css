@@ -153,3 +153,78 @@ button[type="button"]:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 20px rgba(0,0,0,.2);
 }
+/* ==========================
+   TABLA DE CITAS
+========================== */
+
+.table-container {
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.2);
+    overflow-x: auto;
+}
+
+.table-container h3 {
+    text-align: center;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+}
+
+
+.tabla-citas {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+
+thead {
+    background: var(--secondary-color);
+    color: white;
+}
+
+
+th {
+    padding: 14px;
+    text-align: center;
+    font-size: 15px;
+}
+
+
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+
+
+tbody tr {
+    transition: .2s;
+}
+
+
+tbody tr:hover {
+    background: rgba(42,157,143,.12);
+}
+
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* Mensaje cuando no hay datos */
+.no-data {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.2);
+    color: var(--secondary-color);
+    font-weight: bold;
+    text-align: center;
+}
