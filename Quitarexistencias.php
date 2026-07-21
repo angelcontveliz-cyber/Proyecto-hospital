@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-       <link rel="stylesheet" href="estilos.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario de Medicamentos</title>
     <link rel="stylesheet" href="estilos.css">
@@ -12,8 +11,8 @@
         <h3>💊 Modificar Existencia de Medicamentos</h3>
         
         <form action="" method="POST">
-            <label for="id_medicamento">ID del Medicamento:</label>
-            <input type="number" name="id_medicamento" id="id_medicamento" required><br><br>
+            <label for="nombre_busqueda">Nombre del Medicamento:</label>
+            <input type="text" name="nombre_busqueda" id="nombre_busqueda" required placeholder="Ej. Paracetamol"><br><br>
 
             <label for="tipo_operacion">Acción:</label>
             <select name="tipo_operacion" id="tipo_operacion" required>
@@ -31,19 +30,21 @@
         include ("conn.php");
         session_start();
 
-       
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar_stock'])) {
-            $id_medicamento = $_POST['id_medicamento'];
+            $nombre_busqueda = "%" . trim($_POST['nombre_busqueda']) . "%";
             $tipo_operacion = $_POST['tipo_operacion'];
             $cantidad = intval($_POST['cantidad']);
 
-            $stmt_check = $conn->prepare("SELECT existencia, nombre FROM medicamentos WHERE id_medicamento = ?");
-            $stmt_check->bind_param("i", $id_medicamento);
+            // Buscamos el medicamento usando LIKE
+            $stmt_check = $conn->prepare("SELECT id_medicamento, existencia, nombre FROM medicamentos WHERE nombre LIKE ?");
+            $stmt_check->bind_param("s", $nombre_busqueda);
             $stmt_check->execute();
             $resultado = $stmt_check->get_result();
 
             if ($resultado->num_rows > 0) {
+                // Si encuentra coincidencia, tomamos el primero que coincida
                 $fila = $resultado->fetch_assoc();
+                $id_medicamento = $fila['id_medicamento'];
                 $existencia_actual = $fila['existencia'];
                 $nombre_med = $fila['nombre'];
 
@@ -66,7 +67,7 @@
                 }
                 $stmt_update->close();
             } else {
-                echo "<p style='color: red; margin-top: 15px;'>No se encontró ningún medicamento con el ID $id_medicamento.</p>";
+                echo "<p style='color: red; margin-top: 15px;'>No se encontró ningún medicamento con ese nombre.</p>";
             }
             $stmt_check->close();
         }

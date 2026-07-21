@@ -210,61 +210,76 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Guardar'])) {
             }
             break;
 
-        case 4: 
-            ?>
-            <form action="" method="POST">
-                <h3>💊 Nuevo Medicamento</h3>
-                <label for="Nombre_M">Medicamento:</label> 
-                <input type="text" id="Nombre_M" name="Nombre_M" required>
-                
-                <label for="Descripcion">Descripción:</label> 
-                <input type="text" id="Descripcion" name="Descripcion" required>
-                
-                <label for="Existencias">Existencias:</label> 
-                <input type="number" id="Existencias" name="Existencias" required>
-                
-                <button type="submit" name="button1">Ingresar medicamento</button>
-                <?php
-                switch($_SESSION['rol']){
+       case 4: 
+    ?>
+    <form action="" method="POST">
+        <h3>💊 Nuevo Medicamento</h3>
+        
+        <label for="Nombre_M">Medicamento:</label> 
+        <input type="text" id="Nombre_M" name="Nombre_M" required>
+        
+        <label for="Descripcion">Descripción:</label> 
+        <input type="text" id="Descripcion" name="Descripcion" required>
+        
+        <label for="Existencias">Existencias:</label> 
+        <input type="number" id="Existencias" name="Existencias" min="0" required>
 
-                case 1:
-               ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php
-                exit();
-                case 2:
-                ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php exit();
-                 case 4:
-                ?> <a href='Almacenista.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php exit();
+        <label for="Lote">Lote:</label> 
+        <input type="text" id="Lote" name="Lote" required>
 
-                default:
-               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-             <?php   exit();
+        <label for="Proveedor">Proveedor:</label> 
+        <input type="text" id="Proveedor" name="Proveedor" required>
+
+        <label for="Fecha_Cadu">Fecha de Caducidad:</label> 
+        <input type="date" id="Fecha_Cadu" name="Fecha_Cadu" required>
+        
+        <button type="submit" name="button1">Ingresar medicamento</button>
+        
+        <?php
+        switch($_SESSION['rol']){
+            case 1:
+                echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
                 break;
-    }?>
-            </form>
-            <?php 
-            if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['button1'])) {
-                $nombre_m = $_POST['Nombre_M'];
-                $descripcion = $_POST['Descripcion'];
-                $existencias = $_POST['Existencias'];
+            case 2:
+                echo "<a href='Medico.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
+                break;
+            case 4:
+                echo "<a href='Almacenista.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
+                break;
+            default:
+                echo "<a href='Pacientes.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
+                break;
+        }
+        ?>
+    </form>
 
-                $stmt = $conn->prepare("INSERT INTO medicamentos (nombre, descripcion) VALUES(?,?)");
-                $stmt->bind_param("ss", $nombre_m, $descripcion);
-                
-                if($stmt->execute()){
-                    $K = $conn->insert_id;
-                    $stmt1 = $conn->prepare("INSERT INTO inventario (id_medicamento, existencia) VALUES (?,?)");
-                    $stmt1->bind_param("ii", $K, $existencias);
-                    if($stmt1->execute()){ 
-                        echo "<p style='text-align:center; color:green;'>Medicamento e inventario creados.</p>"; 
-                    }
-                    $stmt1->close();
-                }
+    <?php 
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['button1'])) {
+        $nombre_m = $_POST['Nombre_M'];
+        $descripcion = $_POST['Descripcion'];
+        $existencias = $_POST['Existencias'];
+        $lote = $_POST['Lote'];
+        $proveedor = $_POST['Proveedor'];
+        $fecha_cadu = $_POST['Fecha_Cadu'];
+
+        $stmt = $conn->prepare("INSERT INTO medicamentos (nombre, descripcion, lote, proveedor, fecha_cadu) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $nombre_m, $descripcion, $lote, $proveedor, $fecha_cadu);
+        
+        if($stmt->execute()){
+            $K = $conn->insert_id;
+            $stmt1 = $conn->prepare("INSERT INTO inventario (id_medicamento, existencia) VALUES (?, ?)");
+            $stmt1->bind_param("ii", $K, $existencias);
+            
+            if($stmt1->execute()){ 
+                echo "<p style='text-align:center; color:green;'>Medicamento e inventario creados con éxito.</p>"; 
             }
-            break;
-
+            $stmt1->close();
+        } else {
+            echo "<p style='text-align:center; color:red;'>Error al registrar: " . $stmt->error . "</p>";
+        }
+        $stmt->close();
+    }
+    break;
         case 5: 
             ?>
    <form action="" method="POST">
