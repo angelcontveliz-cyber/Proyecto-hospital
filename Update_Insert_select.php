@@ -373,20 +373,20 @@ echo "<script>
     
     <label for="fecha">Fecha de creacion</label>
     <input type="date" id="fecha" name="fecha" required>
+
+    <label for="precio_cita">Precio de la Consulta / Cita</label>
+    <input type="number" step="0.01" id="precio_cita" name="precio_cita" required min="0">
     
     <button type="submit" name="etesech">Crear receta</button>
     
     <?php
     switch($_SESSION['rol']){
-
         case 1:
             echo "<a href='Admin.php'><button type='button'>Regresar</button></a>";
             break;
-
         case 2:
             echo "<a href='Medico.php'><button type='button'>Regresar</button></a>";
             break;
-
         default:
             echo "<a href='Pacientes.php'><button type='button'>Regresar</button></a>";
             break;
@@ -395,31 +395,25 @@ echo "<script>
 </form>
 
 <?php
-
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['etesech'])) {
     
     $id_Cita = $_POST['id_Cita'];
     $fecha = $_POST['fecha'];
+    $precio_cita = $_POST['precio_cita'];
     $estador = "Activo";
-    
     
     $stmt_select = $conn->prepare("SELECT id_cita FROM citas WHERE id_cita = ?");
     $stmt_select->bind_param("i", $id_Cita);
     $stmt_select->execute();
     $resultado = $stmt_select->get_result();
 
-    
     if ($resultado->num_rows > 0) {
         
+        // Insertamos la receta incluyendo el precio de la cita especificado por el doctor
+        $stmt_insert = $conn->prepare("INSERT INTO recetas (id_cita, fecha, estado, precio_cita) VALUES (?, ?, ?, ?)");
+        $stmt_insert->bind_param("issd", $id_Cita, $fecha, $estador, $precio_cita);
         
-        $stmt_insert = $conn->prepare("INSERT INTO recetas (id_cita, fecha, estado) VALUES (?,?,?)");
-        $stmt_insert->bind_param("iss", $id_Cita, $fecha, $estador);
-        
-    
         if($stmt_insert->execute()){
-            
-           
             $_SESSION['id_reseta'] = $conn->insert_id; 
             
             echo "
@@ -429,9 +423,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['etesech'])) {
             </script>
             ";
         }
+        $stmt_insert->close();
         
     } else {
-      
         $ruta_destino = ($_SESSION['rol'] == 1) ? 'Admin.php' : 'Medico.php';
         
         echo "
@@ -441,17 +435,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['etesech'])) {
         </script>
         ";
     }
+    $stmt_select->close();
 }
-break;
+break; 
+
  case 7:
 ?>
+
+
 <form action="" method="POST">
     <label for="id_reseta">Inserte el numero de receta</label>
     <input type="number" id="id_reseta" name="id_reseta" required>
-    <button type="submit" name="btn7">Se pago esta receta</button>
+    <button type="submit" name="btn_consultar">Ver Detalles y Precios</button>
     
    <?php
-   
     switch($_SESSION['rol']){
         case 1:
             echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
@@ -463,67 +460,112 @@ break;
             echo "<a href='Secretaria.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
             break;
     }
-    ?>
+   ?>
 </form>
 
 <?php
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn7'])) {
-
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_consultar'])) {
     $id_reseta = $_POST['id_reseta'];
 
-    $comprobar = $conn->prepare("SELECT estado FROM recetas WHERE id_receta = ?");
+    $comprobar = $conn->prepare("SELECT estado, precio_cita FROM recetas WHERE id_receta = ?");
     $comprobar->bind_param("i", $id_reseta);
     $comprobar->execute();
-
     $comprobare = $comprobar->get_result();
 
     if ($comprobare->num_rows > 0) {
-
         $fila = $comprobare->fetch_assoc();
         $estado = $fila['estado'];
+        $precio_cita = floatval($fila['precio_cita']);
 
-        if ($estado == "Activo") {
+        echo "<div style='background: #f8f9fa; padding: 15px; margin-top: 15px; border-radius: 8px; border: 1px solid #ddd;'>";
+        echo "<h3>🧾 Detalles de la Receta #" . $id_reseta . " (Estado: <strong>" . $estado . "</strong>)</h3>";
 
-            $estadoC = $conn->prepare("UPDATE recetas SET estado='Pagado' WHERE id_receta=?");
-            $estadoC->bind_param("i", $id_reseta);
-            $estadoC->execute();
+        // Consultamos los medicamentos de la receta
+        $nose = $conn->prepare("
+            SELECT dr.cantidad, dr.id_medicamento, m.nombre, m.gramaje, m.precio 
+            FROM detalle_receta dr
+            INNER JOIN medicamentos m ON dr.id_medicamento = m.id_medicamento
+            WHERE dr.id_receta = ?
+        ");
+        $nose->bind_param("i", $id_reseta);
+        $nose->execute();
+        $cambio = $nose->get_result();
 
-            $nose = $conn->prepare("SELECT id_medicamento, cantidad FROM detalle_receta WHERE id_receta=?");
-            $nose->bind_param("i", $id_reseta);
-            $nose->execute();
+        $subtotal_medicamentos = 0;
+        echo "<ul>";
+        if ($cambio->num_rows > 0) {
+            while ($fila_det = $cambio->fetch_assoc()) {
+                $cantidad = $fila_det['cantidad'];
+                $nombre_med = $fila_det['nombre'];
+                $gramaje = $fila_det['gramaje'];
+                $precio_unitario = floatval($fila_det['precio']);
+                
+                $costo_parcial = $cantidad * $precio_unitario;
+                $subtotal_medicamentos += $costo_parcial;
 
-            $cambio = $nose->get_result();
-
-            if ($cambio->num_rows > 0) {
-
-                while ($fila = $cambio->fetch_assoc()) {
-
-                    $cantidad = $fila['cantidad'];
-                    $id_M = $fila['id_medicamento'];
-
-                    $update = $conn->prepare("UPDATE medicamentos SET existencia = existencia - ? WHERE id_medicamento=?");
-                    $update->bind_param("ii", $cantidad, $id_M);
-                    $update->execute();
-
-                    if ($update->affected_rows > 0) {
-                        echo "La receta ha sido actualizada correctamente. Medicamento: $id_M <br>";
-                    } else {
-                        echo "No se pudo actualizar el medicamento $id_M <br>";
-                    }
-
-                }
-
+                echo "<li>Medicamento: <strong>" . $nombre_med . "</strong> (" . $gramaje . ") | Cantidad: " . $cantidad . " | Precio Unitario: $" . $precio_unitario . " | <strong>Subtotal: $" . $costo_parcial . "</strong></li>";
             }
-
         } else {
-            echo "<script>alert('La receta ya fue pagada');</script>";
+            echo "<li>No hay medicamentos registrados en esta receta.</li>";
         }
+        echo "</ul>";
+
+        $total_general = $subtotal_medicamentos + $precio_cita;
+
+        echo "<hr>";
+        echo "<p><strong>Subtotal de Medicamentos:</strong> $" . $subtotal_medicamentos . "</p>";
+        echo "<p><strong>Precio de la Consulta / Cita médica:</strong> $" . $precio_cita . "</p>";
+        echo "<h3 style='color: #007bff;'>TOTAL ESTIMADO A PAGAR: $" . $total_general . "</h3>";
+
+        // Si la receta está activa, mostramos el botón para proceder al pago
+        if ($estado == "Activo") {
+            echo "<form action='' method='POST' style='margin-top: 15px;'>";
+            echo "<input type='hidden' name='id_reseta_pagar' value='" . $id_reseta . "'>";
+            echo "<button type='submit' name='btn_pagar' style='background: #28a745; color: white; padding: 10px 15px; border: none; cursor: pointer; border-radius: 4px;'>Confirmar y Pagar Receta</button>";
+            echo "</form>";
+        } else {
+            echo "<p style='color: orange; font-weight: bold;'>Esta receta ya se encuentra en estado: " . $estado . "</p>";
+        }
+        echo "</div>";
 
     } else {
         echo "<script>alert('Este ID de receta no existe');</script>";
     }
+}
 
+// PASO 2: Procesar el pago, actualizar estado y descontar inventario
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_pagar'])) {
+    $id_reseta = $_POST['id_reseta_pagar'];
+
+    // Actualizamos el estado a Pagado
+    $estadoC = $conn->prepare("UPDATE recetas SET estado='Pagado' WHERE id_receta=?");
+    $estadoC->bind_param("i", $id_reseta);
+    $estadoC->execute();
+    $estadoC->close();
+
+    // Descontamos inventario de cada medicamento de la receta
+    $nose = $conn->prepare("SELECT id_medicamento, cantidad FROM detalle_receta WHERE id_receta=?");
+    $nose->bind_param("i", $id_reseta);
+    $nose->execute();
+    $cambio = $nose->get_result();
+
+    if ($cambio->num_rows > 0) {
+        while ($fila = $cambio->fetch_assoc()) {
+            $cantidad = $fila['cantidad'];
+            $id_M = $fila['id_medicamento'];
+
+            $update = $conn->prepare("UPDATE medicamentos SET existencia = existencia - ? WHERE id_medicamento=?");
+            $update->bind_param("ii", $cantidad, $id_M);
+            $update->execute();
+            $update->close();
+        }
+    }
+
+    echo "<script>
+        alert('¡Receta pagada con éxito e inventario actualizado!');
+        window.location.href = window.location.href;
+    </script>";
 }
 
 break;
