@@ -48,6 +48,17 @@ case 3:
         $_SESSION ['usuario']= $usuario;
         header("Location:Pacientes.php");
 exit();
+
+case 4:
+    
+        $_SESSION ['usuario']= $usuario;
+        header("Location:Almacenista.php");
+        exit();
+ case 5:
+    
+        $_SESSION ['usuario']= $usuario;
+        header("Location:Secretaria.php");
+        exit();
  default:
    heder ("Es imposible que veas esto significa que en algo la cague");
    exit();

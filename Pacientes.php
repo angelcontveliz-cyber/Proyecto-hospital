@@ -14,7 +14,7 @@ if (!isset($_SESSION['usuario'])) {
     header("Location: index.php"); 
     exit(); 
 }
-if($_SESSION['rol']!=1){
+if($_SESSION['rol']!=3){
        echo "
     <script>
         alert('Apoco si muy hacker wow eres muy bueno');
@@ -26,6 +26,7 @@ if($_SESSION['rol']!=1){
 ?>
 <head>
     <meta charset="UTF-8">
+       <link rel="stylesheet" href="estilos.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>

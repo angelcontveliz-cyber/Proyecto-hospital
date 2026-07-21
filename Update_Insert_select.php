@@ -21,127 +21,136 @@ session_start();
         case 1: 
             ?>
             <form action="" method="POST">
-                <h3>👤 Agregar Usuario</h3>
-                <label for="nombre">Nombre:</label> 
-                <input type="text" id="nombre" name="nombre" required>
-                
-                <label for="contrasena">Contraseña:</label> 
-                <input type="password" id="contrasena" name="contrasena" required>
-                
-                <label for="estado">Estado:</label> 
-                <select name="estado" id="estado" required>
-                    <option value="Activo">Activo</option>
-                    <option value="Baja">Baja</option>
-                </select>
-                
-                <label for="id_rol">ID de Rol</label> 
-                <select name="id_rol " id="rol" requiered>
-                    <option value=1>Administrador</option>
-                    <option value=2>Medico</option>
-                    <option value=3>Paciente</option>
-        </select>
-                <input type="number" id="id_rol" name="id_rol" required>
-                
-                <button type="submit" name="btn_guardar">Agregar usuario</button>
-                <?php
-                switch($_SESSION['rol']){
+    <h3>👤 Agregar Usuario</h3>
+    
+    <label for="nombre">Nombre:</label> 
+    <input type="text" id="nombre" name="nombre" required>
+    
+    <label for="contrasena">Contraseña:</label> 
+    <input type="password" id="contrasena" name="contrasena" required>
+    
+    <label for="estado">Estado:</label> 
+    <select name="estado" id="estado" required>
+        <option value="Activo">Activo</option>
+        <option value="Baja">Baja</option>
+    </select>
+    
+    <label for="id_rol">ID de Rol:</label> 
+    <select name="id_rol" id="rol" required>
+        <option value="1">Administrador</option>
+        <option value="2">Medico</option>
+        <option value="3">Paciente</option>
+        <option value="4">Almacenista</option>
+        <option value="5">Secretaria</option>
+    </select>
+    
+    <button type="submit" name="btn_guardar">Agregar usuario</button>
+    
+    <?php
+   
+    switch($_SESSION['rol']){
+        case 1:
+            echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
+            break;
+        case 2:
+            echo "<a href='Medico.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
+            break;
+        default:
+            echo "<a href='Pacientes.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
+            break;
+    }
+    ?>
+</form>
 
-                case 1:
-               ?> <a href='Admin'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php
-                exit();
-                case 2:
-                ?> <a href='Medico'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php exit();
-                default:
-               ?> <a href='Pacientes'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-             <?php   exit();
-                break;
-    }?>
-            </form>
-            <?php 
-            if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_guardar'])) {
-                $nombre = $_POST['nombre'];
-                $contrasena = $_POST['contrasena'];
-                $id_rol = $_POST['id_rol'];
-                $estado = $_POST['estado'];
+<?php 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_guardar'])) {
+    $nombre = $_POST['nombre'];
+    $contrasena = $_POST['contrasena'];
+    $id_rol = $_POST['id_rol'];
+    $estado = $_POST['estado'];
 
-                $stmt = $conn->prepare("INSERT INTO usuarios (usuario, contrasena, id_rol, estado) VALUES (?, ?, ?, ?)");
-                $stmt->bind_param("ssis", $nombre, $contrasena, $id_rol, $estado);
-                
-                if ($stmt->execute()) {
-                    if($id_rol == 2) { 
-                        $_SESSION['id_us'] = $conn->insert_id; 
-                        echo "<script>window.location.href='?opcion=2';</script>"; 
-                    } else { 
-                         echo "
-    <script>
-        alert('Usuario Guardado');
-            window.location.href = 'Admin.php';
-        </script>
-       " ;
-                        echo "<p style='text-align:center; color:green;'>Administrador guardado.</p>"; 
-                    }
-                }
-                $stmt->close();
-            }
+    $stmt = $conn->prepare("INSERT INTO usuarios (usuario, contrasena, id_rol, estado) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssis", $nombre, $contrasena, $id_rol, $estado);
+    
+    if ($stmt->execute()) {
+        if($id_rol == 2) { 
+            $_SESSION['id_us'] = $conn->insert_id; 
+            echo "<script>window.location.href='?opcion=2';</script>"; 
+        } else { 
+            echo "
+            <script>
+                alert('Usuario Guardado');
+                window.location.href = 'Admin.php';
+            </script>
+            ";
+        }
+    } else {
+        echo "<p style='text-align:center; color:red;'>Error al guardar: " . $stmt->error . "</p>";
+    }
+    $stmt->close();
+}
+
             break;
 
         case 2: 
             ?>
             <form action="" method="POST">
-                <h3>👨‍⚕️ Agregar Médico</h3>
-                <label for="id_usuario">ID de Usuario:</label> 
-                <input type="number" id="id_usuario" name="id_usuario" value="<?php echo $_SESSION['id_us'] ?? ''; ?>" required>
-                
-                <label for="Nombre">Nombre Médico:</label> 
-                <input type="text" id="Nombre" name="Nombre" required>
-                
-                <label for="id_especialidad">ID Especialidad:</label> 
-                <input type="number" id="id_especialidad" name="id_especialidad" required>
-                
-                <label for="id_consultorio">ID de Consultorio:</label> 
-                <input type="number" id="id_consultorio" name="id_consultorio" required>
-                
-                <button type="submit" name="Guardar">Agregar Médico</button>
-                <?php
-                switch($_SESSION['rol']){
+    <h3>👨‍⚕️ Agregar Médico</h3>
+    
+    <label for="id_usuario">ID de Usuario:</label> 
+    <input type="number" id="id_usuario" name="id_usuario" value="<?php echo $_SESSION['id_us'] ?? ''; ?>" required>
+    
+    <label for="Nombre">Nombre Médico:</label> 
+    <input type="text" id="Nombre" name="Nombre" required>
+    
+    <label for="id_especialidad">ID Especialidad:</label> 
+    <input type="number" id="id_especialidad" name="id_especialidad" required>
+    
+    <label for="id_consultorio">ID de Consultorio:</label> 
+    <input type="number" id="id_consultorio" name="id_consultorio" required>
+    
+    <button type="submit" name="Guardar">Agregar Médico</button>
+    
+    <?php
+   
+    switch($_SESSION['rol']){
+        case 1:
+            echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
+            break;
+        case 2:
+            echo "<a href='Medico.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
+            break;
+        default:
+            echo "<a href='Pacientes.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
+            break;
+    }
+    ?>
+</form>
 
-                case 1:
-               ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php
-                exit();
-                case 2:
-                ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php exit();
-                default:
-               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-             <?php   exit();
-                break;
-    }?>
-            </form>
-            <?php 
-            if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Guardar'])) {
-                $id_usuario = $_POST['id_usuario'];
-                $nombre_medico = $_POST['Nombre'];
-                $id_especialidad = $_POST['id_especialidad'];
-                $id_consultorio = $_POST['id_consultorio'];
+<?php 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Guardar'])) {
+    $id_usuario = $_POST['id_usuario'];
+    $nombre_medico = $_POST['Nombre'];
+    $id_especialidad = $_POST['id_especialidad'];
+    $id_consultorio = $_POST['id_consultorio'];
 
-                $stmt = $conn->prepare("INSERT INTO medicos (id_usuario, nombre, id_especialidad, id_consultorio) VALUES (?, ?, ?, ?)");
-                $stmt->bind_param("isii", $id_usuario, $nombre_medico, $id_especialidad, $id_consultorio);
-                
-                if ($stmt->execute()) { 
-                    
-                    unset($_SESSION['id_us']); 
-                                         echo "
-    <script>
-        alert('Medico Guardado');
+    $stmt = $conn->prepare("INSERT INTO medicos (id_usuario, nombre, id_especialidad, id_consultorio) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("isii", $id_usuario, $nombre_medico, $id_especialidad, $id_consultorio);
+    
+    if ($stmt->execute()) { 
+        unset($_SESSION['id_us']); 
+        echo "
+        <script>
+            alert('Medico Guardado');
             window.location.href = 'Admin.php';
         </script>
-       " ;
-                }
-                $stmt->close();
-            }
+        ";
+    } else {
+        echo "<p style='color:red; text-align:center;'>Error al guardar: " . $stmt->error . "</p>";
+    }
+    $stmt->close();
+}
+
             break;
 
         case 3:
@@ -173,13 +182,13 @@ session_start();
                 case 1:
                ?> <a href='Admin.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
                 <?php
-                exit();
+                break;
                 case 2:
                 ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-                <?php exit();
+                <?php break;
                 default:
-               ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
-             <?php   exit();
+               ?> <a href='Secretaria.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+             <?php 
                 break;
     }?>
             </form>
@@ -201,7 +210,7 @@ session_start();
             }
             break;
 
-        case 4: // --- MEDICAMENTO ---
+        case 4: 
             ?>
             <form action="" method="POST">
                 <h3>💊 Nuevo Medicamento</h3>
@@ -225,6 +234,10 @@ session_start();
                 case 2:
                 ?> <a href='Medico.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
                 <?php exit();
+                 case 4:
+                ?> <a href='Almacenista.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
+                <?php exit();
+
                 default:
                ?> <a href='Pacientes.php'><button type='button' style='background:#6c757d;'>Regresar</button></a>
              <?php   exit();
@@ -286,7 +299,7 @@ session_start();
             break;
 
         default:
-            echo "<a href='Pacientes.php'><button type='button'>Regresar</button></a>";
+            echo "<a href='Secretaria.php'><button type='button'>Regresar</button></a>";
             break;
     }
     ?>
@@ -422,19 +435,17 @@ break;
     <input type="number" id="id_reseta" name="id_reseta" required>
     <button type="submit" name="btn7">Se pago esta receta</button>
     
-    <?php
+   <?php
+   
     switch($_SESSION['rol']){
-
         case 1:
-            echo "<a href='Admin.php'><button type='button'>Regresar</button></a>";
+            echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
             break;
-
         case 2:
-            echo "<a href='Medico.php'><button type='button'>Regresar</button></a>";
+            echo "<a href='Medico.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
             break;
-
-        default:
-            echo "<a href='Pacientes.php'><button type='button'>Regresar</button></a>";
+        case 5:
+            echo "<a href='Secretaria.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
             break;
     }
     ?>

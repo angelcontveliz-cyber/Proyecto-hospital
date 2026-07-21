@@ -52,10 +52,20 @@ if($resultado->num_rows > 0){
 <?php
     }
 ?>
-<form  >
+<form>
     <?php
-    
-            echo "<a href='Admin.php'><button type='button'>Regresar</button></a>";
+      switch($_SESSION['rol']){
+        case 1:
+            echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
+            break;
+        case 2:
+            echo "<a href='Medico.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
+            break;
+        case 5:
+            echo "<a href='Secretaria.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
+            break;
+    }
+    ?>
     ?>
     </form>
 </table>

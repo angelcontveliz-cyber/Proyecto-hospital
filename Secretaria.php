@@ -11,7 +11,7 @@ if (!isset($_SESSION['usuario'])) {
     header("Location: index.php"); 
     exit(); 
 }
-if($_SESSION['rol']!=1){
+if($_SESSION['rol']!=5){
      echo "
     <script>
         alert('Apoco si muy hacker wow eres muy bueno');
@@ -33,16 +33,10 @@ if($_SESSION['rol']!=1){
         <h1 style="color:white; margin-bottom: 20px;">Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']); ?></h1>
         
         <div class="dashboard-grid">
-            <a href="Update_Insert_select?opcion=1" class="card">👤 <br><br> Usuario</a>
-            <a href="Update_Insert_select?opcion=2" class="card">👨‍⚕️ <br><br> Médico</a>
             <a href="Update_Insert_select?opcion=3" class="card">🏥 <br><br> Paciente</a>
-            <a href="Update_Insert_select?opcion=4" class="card">💊 <br><br> Medicamento</a>
             <a href="Update_Insert_select?opcion=5" class="card">📅 <br><br> Cita</a>
-            <a href="Update_Insert_select?opcion=6" class="card">📋 <br><br> Reseta</a>
             <a href="Update_Insert_select?opcion=7" class="card">🔄 <br><br> Cambiar estado de receta</a>
             <a href="EstadoCita.php" class="card">⚙️ <br><br> Cambiar estado de cita</a>
-            <a href="subir_foto.php" class="card">📷 <br><br> Subir foto del paciente</a>
-            <a href="Ver_fotos_pacientes.php" class="card">🖼️ <br><br> Ver foto del paciente</a>
             <a href="Ver_medicos.php" class="card">🩺 <br><br> Ver medicos</a>
 
             <form action="" method="POST" style="padding:0; border:none; box-shadow:none; background:none; display:contents;">

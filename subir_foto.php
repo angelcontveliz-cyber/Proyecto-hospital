@@ -34,6 +34,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btnM'])){
 
 <!DOCTYPE html>
 <html lang="es">
+       <link rel="stylesheet" href="estilos.css">
 <head>
     <meta charset="UTF-8">
     <title>Subir Imagen</title>
