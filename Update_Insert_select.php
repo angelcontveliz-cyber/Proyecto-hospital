@@ -212,74 +212,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Guardar'])) {
 
        case 4: 
     ?>
-    <form action="" method="POST">
-        <h3>💊 Nuevo Medicamento</h3>
+    <div class="table-container">
+        <h3>💊 Registrar Nuevo Medicamento Base</h3>
         
-        <label for="Nombre_M">Medicamento:</label> 
-        <input type="text" id="Nombre_M" name="Nombre_M" required>
-        
-        <label for="Descripcion">Descripción:</label> 
-        <input type="text" id="Descripcion" name="Descripcion" required>
-        
-        <label for="Existencias">Existencias:</label> 
-        <input type="number" id="Existencias" name="Existencias" min="0" required>
+        <form action="" method="POST">
+            <label for="nombre">Nombre del Medicamento:</label>
+            <input type="text" name="nombre" id="nombre" required placeholder="Ej. Paracetamol"><br><br>
 
-        <label for="Lote">Lote:</label> 
-        <input type="text" id="Lote" name="Lote" required>
+            <label for="descripcion">Descripción:</label>
+            <textarea name="descripcion" id="descripcion" rows="3" required style="width:100%;"></textarea><br><br>
 
-        <label for="Proveedor">Proveedor:</label> 
-        <input type="text" id="Proveedor" name="Proveedor" required>
+            <label for="gramaje">Gramaje / Concentración:</label>
+            <input type="text" name="gramaje" id="gramaje" required placeholder="Ej. 500 mg"><br><br>
 
-        <label for="Fecha_Cadu">Fecha de Caducidad:</label> 
-        <input type="date" id="Fecha_Cadu" name="Fecha_Cadu" required>
-        
-        <button type="submit" name="button1">Ingresar medicamento</button>
-        
+            <label for="precio">Precio Unitario ($):</label>
+            <input type="number" step="0.01" name="precio" id="precio" min="0" required placeholder="0.00"><br><br>
+
+            <button type="submit" name="registrar_medicamento" style="background: #28a745; width: 100%;">Guardar Medicamento</button>
+        </form>
+
         <?php
-        switch($_SESSION['rol']){
-            case 1:
-                echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
-                break;
-            case 2:
-                echo "<a href='Medico.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
-                break;
-            case 4:
-                echo "<a href='Almacenista.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
-                break;
-            default:
-                echo "<a href='Pacientes.php'><button type='button' style='background:#6c757d; margin-top:10px;'>Regresar</button></a>";
-                break;
+      
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['registrar_medicamento'])) {
+            $nombre = trim($_POST['nombre']);
+            $descripcion = trim($_POST['descripcion']);
+            $gramaje = trim($_POST['gramaje']);
+            $precio = floatval($_POST['precio']);
+
+            $stmt = $conn->prepare("INSERT INTO medicamentos (nombre, descripcion, gramaje, precio) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("sssd", $nombre, $descripcion, $gramaje, $precio);
+
+            if ($stmt->execute()) {
+                echo "<p style='color: green; margin-top: 15px; text-align: center;'>¡Medicamento <strong>$nombre</strong> registrado con éxito en el catálogo!</p>";
+            } else {
+                echo "<p style='color: red; margin-top: 15px;'>Error al registrar: " . $stmt->error . "</p>";
+            }
+            $stmt->close();
         }
         ?>
-    </form>
-
-    <?php 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['button1'])) {
-        $nombre_m = $_POST['Nombre_M'];
-        $descripcion = $_POST['Descripcion'];
-        $existencias = $_POST['Existencias'];
-        $lote = $_POST['Lote'];
-        $proveedor = $_POST['Proveedor'];
-        $fecha_cadu = $_POST['Fecha_Cadu'];
-
-        $stmt = $conn->prepare("INSERT INTO medicamentos (nombre, descripcion, lote, proveedor, fecha_cadu) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $nombre_m, $descripcion, $lote, $proveedor, $fecha_cadu);
         
-        if($stmt->execute()){
-            $K = $conn->insert_id;
-            $stmt1 = $conn->prepare("INSERT INTO inventario (id_medicamento, existencia) VALUES (?, ?)");
-            $stmt1->bind_param("ii", $K, $existencias);
-            
-            if($stmt1->execute()){ 
-                echo "<p style='text-align:center; color:green;'>Medicamento e inventario creados con éxito.</p>"; 
-            }
-            $stmt1->close();
-        } else {
-            echo "<p style='text-align:center; color:red;'>Error al registrar: " . $stmt->error . "</p>";
-        }
-        $stmt->close();
-    }
-    break;
+        <form style="margin-top: 20px;">
+            <a href='Almacenista.php'><button type='button' style="width: 100%; background: #6c757d;">Regresar</button></a>
+        </form>
+    </div>
+
+<?php
+break; 
+
         case 5: 
             ?>
    <form action="" method="POST">
@@ -453,11 +433,8 @@ break;
         case 1:
             echo "<a href='Admin.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
             break;
-        case 2:
-            echo "<a href='Medico.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
-            break;
         case 5:
-            echo "<a href='Secretaria.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
+            echo "<a href='Almacenista.php'><button type='button' style='background:#6c757d; margin-top: 10px;'>Regresar</button></a>";
             break;
     }
    ?>
@@ -544,7 +521,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_pagar'])) {
     $estadoC->execute();
     $estadoC->close();
 
-    // Obtenemos los medicamentos y cantidades de la receta
+    
     $nose = $conn->prepare("SELECT id_medicamento, cantidad FROM detalle_receta WHERE id_receta=?");
     $nose->bind_param("i", $id_reseta);
     $nose->execute();
@@ -616,7 +593,16 @@ switch ($_SESSION['rol']) {
             window.location.href='Medico.php';
         </script>
         ";
-        exit();
+        
+        break;
+        case 4:
+        echo "
+        <script>
+            alert('No tiene permiso para ver esta página');
+            window.location.href='Almacenista.php';
+        </script>
+        ";
+      break;
     default:
     echo "lol";
 

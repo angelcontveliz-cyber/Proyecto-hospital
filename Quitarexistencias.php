@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="table-container">
-        <h3>📉 Quitar Existencia / Salida de Medicamento por Lote</h3>
+        <h3>📉 Salida Manual de Medicamento por Lote</h3>
         
         <?php
         include ("conn.php");
@@ -17,7 +17,6 @@
         $lotes_disponibles = [];
         $nombre_busqueda_actual = "";
 
-        // 1. Si presionan buscar, filtramos los lotes
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['buscar_lotes'])) {
             $nombre_busqueda_actual = trim($_POST['nombre_busqueda']);
             $busqueda_sql = "%" . $nombre_busqueda_actual . "%";
@@ -29,14 +28,10 @@
                 WHERE m.nombre LIKE ? AND i.existencia > 0
             ");
             
-            // Verificamos si la tabla existe o si hay error SQL
-            if (!$stmt_lotes) {
-                echo "<p style='color:red; background:#f8d7da; padding:10px; border-radius:5px;'>❌ Error en la base de datos: " . $conn->error . " (Asegúrate de haber ejecutado el código SQL para crear la tabla 'inventario').</p>";
-            } else {
+            if ($stmt_lotes) {
                 $stmt_lotes->bind_param("s", $busqueda_sql);
                 $stmt_lotes->execute();
                 $res_lotes = $stmt_lotes->get_result();
-
                 while ($lote_row = $res_lotes->fetch_assoc()) {
                     $lotes_disponibles[] = $lote_row;
                 }
@@ -44,7 +39,7 @@
             }
         }
 
-        // 2. Si presionan confirmar salida
+        // 2. Procesar Salida
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['procesar_salida'])) {
             $id_inventario = intval($_POST['id_inventario']);
             $cantidad_quitar = intval($_POST['cantidad_quitar']);
@@ -61,36 +56,25 @@
                     $stock_actual = $fila_inv['existencia'];
                     $nombre_lote = $fila_inv['lote'];
 
-                    $nuevo_stock = $stock_actual - $cantidad_quitar;
-                    if ($nuevo_stock < 0) {
-                        $nuevo_stock = 0; // Evitamos números negativos
-                    }
+                    $nuevo_stock = max(0, $stock_actual - $cantidad_quitar);
 
                     $stmt_upd = $conn->prepare("UPDATE inventario SET existencia = ? WHERE id_inventario = ?");
                     $stmt_upd->bind_param("ii", $nuevo_stock, $id_inventario);
 
                     if ($stmt_upd->execute()) {
-                        echo "<div style='background: #e2f0d9; padding: 10px; margin-bottom: 15px; border-radius: 5px; text-align: center;'>";
-                        echo "<p style='color: green; margin:0;'>¡Stock actualizado con éxito!</p>";
-                        echo "<p style='margin:5px 0 0 0;'>Se quitaron <strong>$cantidad_quitar</strong> unidades al lote <strong>$nombre_lote</strong>. Stock restante: $nuevo_stock.</p>";
-                        echo "</div>";
+                        echo "<p style='color: green; margin-bottom: 15px; text-align: center;'>¡Se quitaron <strong>$cantidad_quitar</strong> unidades al lote <strong>$nombre_lote</strong>!</p>";
                     } else {
-                        echo "<p style='color: red; margin-bottom: 15px;'>Error al actualizar el inventario.</p>";
+                        echo "<p style='color: red; margin-bottom: 15px; text-align: center;'>Error al actualizar.</p>";
                     }
                     $stmt_upd->close();
                 }
                 $stmt_inv->close();
             }
 
-            // Volvemos a cargar los lotes actualizados
+            // Recargar lotes
             if (!empty($nombre_busqueda_actual)) {
                 $busqueda_sql = "%" . $nombre_busqueda_actual . "%";
-                $stmt_lotes = $conn->prepare("
-                    SELECT i.id_inventario, i.lote, i.existencia, i.fecha_cadu, m.nombre 
-                    FROM inventario i
-                    INNER JOIN medicamentos m ON i.id_medicamento = m.id_medicamento
-                    WHERE m.nombre LIKE ? AND i.existencia > 0
-                ");
+                $stmt_lotes = $conn->prepare("SELECT i.id_inventario, i.lote, i.existencia, i.fecha_cadu, m.nombre FROM inventario i INNER JOIN medicamentos m ON i.id_medicamento = m.id_medicamento WHERE m.nombre LIKE ? AND i.existencia > 0");
                 if ($stmt_lotes) {
                     $stmt_lotes->bind_param("s", $busqueda_sql);
                     $stmt_lotes->execute();
@@ -104,17 +88,32 @@
         }
         ?>
 
-        <!-- FORMULARIO 1: Solo para buscar -->
+    
         <form action="" method="POST">
-            <label for="nombre_busqueda">Nombre del Medicamento:</label>
-            <input type="text" name="nombre_busqueda" id="nombre_busqueda" required placeholder="Ej. Paracetamol" value="<?php echo htmlspecialchars($nombre_busqueda_actual); ?>"><br><br>
+            <label for="nombre_busqueda">Medicamento a descontar:</label>
+            
+          
+            <input type="text" name="nombre_busqueda" id="nombre_busqueda" list="lista_medicamentos" autocomplete="off" required  value="<?php echo htmlspecialchars($nombre_busqueda_actual); ?>"><br><br>
+            
+      
+            <datalist id="lista_medicamentos">
+                <?php
+               
+                $query_nombres = "SELECT nombre FROM medicamentos ORDER BY nombre ASC";
+                $res_nombres = $conn->query($query_nombres);
+                
+                if ($res_nombres && $res_nombres->num_rows > 0) {
+                    while ($row_nombre = $res_nombres->fetch_assoc()) {
+                        echo '<option value="' . htmlspecialchars($row_nombre['nombre']) . '">';
+                    }
+                }
+                ?>
+            </datalist>
 
-            <button type="submit" name="buscar_lotes" style="background: #17a2b8; width: 100%;">1. Buscar Lotes</button>
+            <button type="submit" name="buscar_lotes" style="background: #17a2b8; width: 100%;">1. Buscar Lotes Disponibles</button>
         </form>
-
         <hr style="margin: 20px 0;">
 
-        <!-- FORMULARIO 2: Solo para seleccionar lote y quitar stock -->
         <form action="" method="POST">
             <input type="hidden" name="nombre_busqueda_oculta" value="<?php echo htmlspecialchars($nombre_busqueda_actual); ?>">
 
@@ -135,7 +134,7 @@
             <label for="cantidad_quitar">Cantidad a Quitar:</label>
             <input type="number" name="cantidad_quitar" id="cantidad_quitar" min="1" required><br><br>
 
-            <button type="submit" name="procesar_salida" style="background: #dc3545; width: 100%;">2. Confirmar y Quitar Stock</button>
+            <button type="submit" name="procesar_salida" style="background: #dc3545; width: 100%;">2. Confirmar Salida de Stock</button>
         </form>
 
         <form style="margin-top: 20px;">

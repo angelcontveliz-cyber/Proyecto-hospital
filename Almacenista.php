@@ -36,7 +36,8 @@ if($_SESSION['rol']!=4){
     <div class="dashboard-grid">
         <a href="Update_Insert_select?opcion=4" class="card">💊 <br><br> Nuevo medicamento</a>
           <a href="Quitarexistencias.php" class="card">💊 <br><br> Cambiar existencias de medicamento</a>
-           <a href="restar_medicamento.php" class="card">💊 <br><br> Cambiar existencias de medicamento</a>
+           <a href="Mas_medicamento.php" class="card">💊 <br><br> Insertar lote</a>
+           <a href="Update_Insert_select?opcion=7" class="card">💳<br><br>Agregar el pago de receta</a>
      <form action="" method="POST" class="card" style="padding:0; border:none; cursor:pointer;">
         
 <button type="submit" name="btn_salir" style="background:transparent; border:none; width:100%; height:100%; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:inherit; color:inherit;">

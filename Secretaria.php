@@ -35,7 +35,6 @@ if($_SESSION['rol']!=5){
         <div class="dashboard-grid">
             <a href="Update_Insert_select?opcion=3" class="card">🏥 <br><br> Paciente</a>
             <a href="Update_Insert_select?opcion=5" class="card">📅 <br><br> Cita</a>
-            <a href="Update_Insert_select?opcion=7" class="card">🔄 <br><br> Cambiar estado de receta</a>
             <a href="EstadoCita.php" class="card">⚙️ <br><br> Cambiar estado de cita</a>
             <a href="Ver_medicos.php" class="card">🩺 <br><br> Ver medicos</a>
 
