@@ -481,7 +481,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_consultar'])) {
         echo "<div style='background: #f8f9fa; padding: 15px; margin-top: 15px; border-radius: 8px; border: 1px solid #ddd;'>";
         echo "<h3>🧾 Detalles de la Receta #" . $id_reseta . " (Estado: <strong>" . $estado . "</strong>)</h3>";
 
-        // Consultamos los medicamentos de la receta
+        
         $nose = $conn->prepare("
             SELECT dr.cantidad, dr.id_medicamento, m.nombre, m.gramaje, m.precio 
             FROM detalle_receta dr
@@ -534,17 +534,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_consultar'])) {
     }
 }
 
-// PASO 2: Procesar el pago, actualizar estado y descontar inventario
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_pagar'])) {
     $id_reseta = $_POST['id_reseta_pagar'];
 
-    // Actualizamos el estado a Pagado
+    
     $estadoC = $conn->prepare("UPDATE recetas SET estado='Pagado' WHERE id_receta=?");
     $estadoC->bind_param("i", $id_reseta);
     $estadoC->execute();
     $estadoC->close();
 
-    // Descontamos inventario de cada medicamento de la receta
+    // Obtenemos los medicamentos y cantidades de la receta
     $nose = $conn->prepare("SELECT id_medicamento, cantidad FROM detalle_receta WHERE id_receta=?");
     $nose->bind_param("i", $id_reseta);
     $nose->execute();
@@ -552,18 +552,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_pagar'])) {
 
     if ($cambio->num_rows > 0) {
         while ($fila = $cambio->fetch_assoc()) {
-            $cantidad = $fila['cantidad'];
+            $cantidad_a_descontar = $fila['cantidad'];
             $id_M = $fila['id_medicamento'];
 
-            $update = $conn->prepare("UPDATE medicamentos SET existencia = existencia - ? WHERE id_medicamento=?");
-            $update->bind_param("ii", $cantidad, $id_M);
-            $update->execute();
-            $update->close();
+            // Buscamos los lotes disponibles de este medicamento (ordenados por fecha de caducidad para usar primero los que estén por vencer)
+            $stmt_lotes = $conn->prepare("SELECT id_inventario, existencia FROM inventario WHERE id_medicamento = ? AND existencia > 0 ORDER BY fecha_cadu ASC");
+            $stmt_lotes->bind_param("i", $id_M);
+            $stmt_lotes->execute();
+            $res_lotes = $stmt_lotes->get_result();
+
+            while ($lote = $res_lotes->fetch_assoc()) {
+                if ($cantidad_a_descontar <= 0) break;
+
+                $id_inventario = $lote['id_inventario'];
+                $stock_lote = $lote['existencia'];
+
+                if ($stock_lote >= $cantidad_a_descontar) {
+                    // Si el lote tiene suficiente stock, le restamos todo lo que falta
+                    $nuevo_stock = $stock_lote - $cantidad_a_descontar;
+                    $update = $conn->prepare("UPDATE inventario SET existencia = ? WHERE id_inventario = ?");
+                    $update->bind_param("ii", $nuevo_stock, $id_inventario);
+                    $update->execute();
+                    $update->close();
+                    $cantidad_a_descontar = 0;
+                } else {
+                    // Si el lote no alcanza, consumimos el lote completo y pasamos al siguiente
+                    $cantidad_a_descontar -= $stock_lote;
+                    $update = $conn->prepare("UPDATE inventario SET existencia = 0 WHERE id_inventario = ?");
+                    $update->bind_param("i", $id_inventario);
+                    $update->execute();
+                    $update->close();
+                }
+            }
+            $stmt_lotes->close();
         }
     }
 
     echo "<script>
-        alert('¡Receta pagada con éxito e inventario actualizado!');
+        alert('¡Receta pagada con éxito e inventario de lotes actualizado!');
         window.location.href = window.location.href;
     </script>";
 }
