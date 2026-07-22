@@ -17,7 +17,23 @@
 
         <form action="" method="POST">
             <label for="nombre_M">Nombre o parte del Medicamento:</label>
-            <input type="text" name="nombre_M" id="nombre_M" required placeholder="Ej. Paracetamol" style="width: 100%; box-sizing: border-box;">
+            <!-- Agregamos list="lista_medicamentos" y autocomplete="off" -->
+            <input type="text" name="nombre_M" id="nombre_M" list="lista_medicamentos" autocomplete="off" required placeholder="Ej. Paracetamol" style="width: 100%; box-sizing: border-box;">
+            
+            <!-- Creamos el datalist que contendrá las opciones de la base de datos -->
+            <datalist id="lista_medicamentos">
+                <?php
+                // Consultamos todos los nombres de medicamentos registrados
+                $query_nombres = "SELECT nombre FROM medicamentos ORDER BY nombre ASC";
+                $res_nombres = $conn->query($query_nombres);
+                
+                if ($res_nombres && $res_nombres->num_rows > 0) {
+                    while ($row_nombre = $res_nombres->fetch_assoc()) {
+                        echo '<option value="' . htmlspecialchars($row_nombre['nombre']) . '">';
+                    }
+                }
+                ?>
+            </datalist>
             
             <label for="cantidad">Cantidad:</label>
             <input type="number" name="cantidad" id="cantidad" min="1" required style="width: 100%; box-sizing: border-box;">
@@ -33,10 +49,8 @@
             $Nombre_M = trim($_POST['nombre_M']);
             $cantidad = intval($_POST['cantidad']);
 
-            // Usamos LIKE con comodines '%' para buscar todas las coincidencias parecidas
             $busqueda_nombre = "%" . $Nombre_M . "%";
             
-            // Traemos también el gramaje y el precio para mostrarlos en pantalla
             $Recu = $conn->prepare("SELECT id_medicamento, nombre, gramaje, precio FROM medicamentos WHERE nombre LIKE ?");
             $Recu->bind_param("s", $busqueda_nombre);
             $Recu->execute();
@@ -44,7 +58,7 @@
 
             if($Resultado && $Resultado->num_rows > 0){
                 
-                // Si quieres que agarre el primero que coincida automáticamente:
+                // Agarra el primero que coincida automáticamente
                 $fila_med = $Resultado->fetch_assoc();
                 $id_del_Medicamento = $fila_med['id_medicamento'];
                 $nombre_encontrado = $fila_med['nombre'];
